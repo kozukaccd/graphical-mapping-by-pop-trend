@@ -5,7 +5,7 @@ interface Props {
 }
 
 export const TestComponent: React.FC<Props> = ({ title }) => {
-  const apikey = import.meta.env.VITE_API_KEY;
+  const apikey = process.env.VITE_API_KEY;
   return (
     <div>
       <h1>{title}</h1>
