@@ -10,6 +10,12 @@
 
 ## setup
 
-1. `npm install`
-2. `.env.example` を '.env' にリネームし、中の`{enter-your-api-key}`を取得した API キーに置き換えてください。
-3. `npm run dev`
+- `.env.example` を '.env' にリネームし、中の`{enter-your-api-key}`を取得した API キーに置き換えてください。
+  その後
+
+```
+npm install
+npm run dev
+```
+
+でサーバーが起動します
