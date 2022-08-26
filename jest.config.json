@@ -7,6 +7,7 @@
   "testEnvironment": "jest-environment-jsdom",
   "setupFilesAfterEnv": ["<rootDir>/jest.setup.ts"],
   "moduleNameMapper": {
-    "d3(-.*)": "<rootDir>/node_modules/d3$1/dist/d3$1.min.js"
+    "d3(-.*)": "<rootDir>/node_modules/d3$1/dist/d3$1.min.js",
+    "^~/(.+)": "<rootDir>/src/$1"
   }
 }
