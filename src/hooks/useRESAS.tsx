@@ -44,10 +44,7 @@ export const useRESAS: UseRESAS = () => {
 
   const getPrefectures = (): void => {
     axios
-      .get(
-        "https://opendata.resas-portal.go.jp/api/v1/prefectures",
-        requestHeader
-      )
+      .get("https://opendata.resas-portal.go.jp/api/v1/prefectures", requestHeader)
       .then((res: AxiosResponse<{ result: Prefecture[] }>) => {
         setPosts(res.data.result);
       })
@@ -63,17 +60,10 @@ export const useRESAS: UseRESAS = () => {
 
   const addPrefectureToGraph = (prefCode: number): void => {
     axios
-      .get(
-        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(
-          prefCode
-        )}`,
-        requestHeader
-      )
+      .get(`https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(prefCode)}`, requestHeader)
       .then((res: AxiosResponse<{ result: RawPrefPopulation }>) => {
         const { data } = res.data.result;
-        const prefName =
-          prefectures.find((item) => item.prefCode === prefCode)?.prefName ??
-          "";
+        const prefName = prefectures.find((item) => item.prefCode === prefCode)?.prefName ?? "";
         const tmp: PrefPopulation = {
           prefCode,
           prefName,

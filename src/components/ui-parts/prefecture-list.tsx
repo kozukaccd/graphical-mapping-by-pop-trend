@@ -12,13 +12,7 @@ const PrefectureList: React.FC = () => {
   return (
     <Fragment>
       {prefectures.map((item, i) => {
-        return (
-          <PrefElement
-            key={`item${String(i)}`}
-            prefName={item.prefName}
-            prefCode={item.prefCode}
-          />
-        );
+        return <PrefElement key={`item${String(i)}`} prefName={item.prefName} prefCode={item.prefCode} />;
       })}
     </Fragment>
   );
