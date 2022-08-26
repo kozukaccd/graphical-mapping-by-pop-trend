@@ -1,11 +1,10 @@
 import React from "react";
-import { TestComponent } from "./TestComponent";
+import Main from "~/components/pages/main";
 
 const App: React.FC = () => {
   return (
     <div className="App">
-      <TestComponent title="Hello World" />
-      <p>test</p>
+      <Main />
     </div>
   );
 };
