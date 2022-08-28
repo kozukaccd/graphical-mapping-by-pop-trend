@@ -39,8 +39,16 @@ interface UseRESAS {
   isPrefectureShownInGraphData: (prefCode: number) => boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const RESASContext = React.createContext({} as UseRESAS);
+const contextDefaultValues: UseRESAS = {
+  prefectures: [],
+  populationData: [],
+  getPrefectures: () => {},
+  togglePrefectureOnGraph: (prefCode: number) => {},
+  isPrefectureCodeInGraphData: (prefCode: number) => false,
+  isPrefectureShownInGraphData: (prefCode: number) => false,
+};
+
+const RESASContext = React.createContext(contextDefaultValues);
 
 const apikey = process.env.VITE_API_KEY ?? "";
 const requestHeader: AxiosRequestConfig = { headers: { "X-API-KEY": apikey } };
