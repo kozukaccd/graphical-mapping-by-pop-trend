@@ -1,21 +1,36 @@
-import React, { useEffect, Fragment } from "react";
-import { useRESAS } from "~/hooks/useRESAS";
+import React, { Fragment, useEffect } from "react";
+import { useRESAS } from "~/hooks/useRESAS/useRESAS";
 import { PrefElement } from "~/components/ui-elements/pref-element";
+import styled from "styled-components";
 
-const PrefectureList: React.FC = () => {
-  const { prefectures, addPrefectureToGraph } = useRESAS();
+export const PrefectureList: React.FC = () => {
+  const { prefectures, getPrefectures } = useRESAS();
 
   useEffect(() => {
-    addPrefectureToGraph(5);
+    getPrefectures();
   }, []);
 
   return (
     <Fragment>
-      {prefectures.map((item, i) => {
-        return <PrefElement key={`item${String(i)}`} prefName={item.prefName} prefCode={item.prefCode} />;
-      })}
+      <ListContainer>
+        {prefectures === undefined
+          ? null
+          : prefectures.map((item, i) => {
+              return (
+                <PrefElement
+                  key={`item${String(i)}`}
+                  prefName={item.prefName}
+                  prefCode={item.prefCode}
+                />
+              );
+            })}
+      </ListContainer>
     </Fragment>
   );
 };
 
-export default PrefectureList;
+const ListContainer = styled.ul`
+  display: flex;
+  list-style-type: none;
+  flex-wrap: wrap;
+`;

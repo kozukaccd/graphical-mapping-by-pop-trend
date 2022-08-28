@@ -1,5 +1,5 @@
 import React from "react";
-import Main from "~/components/pages/main";
+import { Main } from "~/components/pages/main";
 
 const App: React.FC = () => {
   return (

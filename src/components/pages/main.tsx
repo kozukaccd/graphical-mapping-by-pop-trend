@@ -1,14 +1,12 @@
 import React, { Fragment } from "react";
-import GraphView from "~/components/ui-parts/graph-view";
-import PrefectureList from "../ui-parts/prefecture-list";
+import { GraphView } from "~/components/ui-parts/graph-view";
+import { PrefectureList } from "../ui-parts/prefecture-list";
 
-const Main: React.FC = () => {
+export const Main: React.FC = () => {
   return (
     <Fragment>
-      <PrefectureList />
       <GraphView />
+      <PrefectureList />
     </Fragment>
   );
 };
-
-export default Main;
