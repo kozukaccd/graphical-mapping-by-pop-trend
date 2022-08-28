@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useContext, ReactNode } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 interface Prefecture {
@@ -18,6 +18,7 @@ interface RawPrefPopulation {
 }
 
 interface PrefPopulation {
+  isActive: boolean;
   prefCode: number;
   prefName: string;
   label: string;
@@ -27,56 +28,120 @@ interface PrefPopulation {
   }>;
 }
 
-type GraphData = PrefPopulation[];
+type PopulationData = PrefPopulation[];
 
-type UseRESAS = () => {
+interface UseRESAS {
   prefectures: Prefecture[];
-  graphData: GraphData;
-  addPrefectureToGraph: (prefCode: number) => void;
-};
+  populationData: PopulationData;
+  getPrefectures: () => void;
+  togglePrefectureOnGraph: (prefCode: number) => void;
+  isPrefectureCodeInGraphData: (prefCode: number) => boolean;
+  isPrefectureShownInGraphData: (prefCode: number) => boolean;
+}
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+const RESASContext = React.createContext({} as UseRESAS);
 
 const apikey = process.env.VITE_API_KEY ?? "";
 const requestHeader: AxiosRequestConfig = { headers: { "X-API-KEY": apikey } };
 
-export const useRESAS: UseRESAS = () => {
-  const [prefectures, setPosts] = useState<Prefecture[]>([]);
-  const [graphData, setGraphData] = useState<GraphData>([]);
+const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
+  const [prefectures, setPrefectures] = useState<Prefecture[]>([]);
+  const [populationData, setGraphData] = useState<PopulationData>([]);
 
   const getPrefectures = (): void => {
     axios
-      .get("https://opendata.resas-portal.go.jp/api/v1/prefectures", requestHeader)
+      .get(
+        "https://opendata.resas-portal.go.jp/api/v1/prefectures",
+        requestHeader
+      )
       .then((res: AxiosResponse<{ result: Prefecture[] }>) => {
-        setPosts(res.data.result);
+        setPrefectures(res.data.result);
       })
       .catch((e) => {
         console.log("error");
         console.log(e);
       });
   };
-  useEffect(() => {
-    getPrefectures();
-    console.log(graphData);
-  }, [graphData]);
 
-  const addPrefectureToGraph = (prefCode: number): void => {
-    axios
-      .get(`https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(prefCode)}`, requestHeader)
+  const getPrefecturePopulation = async (
+    prefCode: number
+  ): Promise<PrefPopulation> => {
+    return await axios
+      .get(
+        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(
+          prefCode
+        )}`,
+        requestHeader
+      )
       .then((res: AxiosResponse<{ result: RawPrefPopulation }>) => {
         const { data } = res.data.result;
-        const prefName = prefectures.find((item) => item.prefCode === prefCode)?.prefName ?? "";
+        const prefName =
+          prefectures.find((item) => item.prefCode === prefCode)?.prefName ??
+          "";
         const tmp: PrefPopulation = {
           prefCode,
           prefName,
+          isActive: true,
           label: data[0].label,
           data: data[0].data,
         };
-        setGraphData([...graphData, tmp]);
-      })
-      .catch((e) => {
-        console.log("error");
-        console.log(e);
+        return tmp;
       });
   };
 
-  return { prefectures, graphData, addPrefectureToGraph };
+  // グラフデータの中に都道府県コードがあるか・あった場合isActiveがtrueどうかを判定する
+  const isPrefectureCodeInGraphData = (prefCode: number): boolean => {
+    return populationData.some((item) => item.prefCode === prefCode);
+  };
+
+  const isPrefectureShownInGraphData = (prefCode: number): boolean => {
+    return populationData.some(
+      (item) => item.prefCode === prefCode && item.isActive
+    );
+  };
+
+  const togglePrefectureOnGraph = (prefCode: number): void => {
+    // populationDataの中身を走査して、prefCodeが一致するものがあった場合はisAvticeを反転させる
+    if (isPrefectureCodeInGraphData(prefCode)) {
+      console.log("find");
+      setGraphData(
+        populationData.map((item) => {
+          if (item.prefCode === prefCode) {
+            item.isActive = !item.isActive;
+            return item;
+          } else {
+            return item;
+          }
+        })
+      );
+    } else {
+      // 無かった場合はRESASから取得してisActive=trueで追加する
+      getPrefecturePopulation(prefCode)
+        .then((res) => {
+          setGraphData([...populationData, res]);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+  };
+
+  return (
+    <RESASContext.Provider
+      value={{
+        prefectures,
+        populationData,
+        getPrefectures,
+        togglePrefectureOnGraph,
+        isPrefectureCodeInGraphData,
+        isPrefectureShownInGraphData,
+      }}
+      {...props}
+    />
+  );
 };
+
+export const useRESAS = (): UseRESAS => useContext(RESASContext);
+
+export default RESASProvider;
