@@ -7,6 +7,7 @@ export const PrefElement: React.FC<{ prefName: string; prefCode: number }> = ({
   prefCode,
 }) => {
   const { togglePrefectureOnGraph, isPrefectureShownInGraphData } = useRESAS();
+
   const clickHandler = (code: number): void => {
     togglePrefectureOnGraph(code);
   };
