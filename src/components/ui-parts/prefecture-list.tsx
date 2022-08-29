@@ -16,13 +16,7 @@ export const PrefectureList: React.FC = () => {
         {prefectures === undefined
           ? null
           : prefectures.map((item, i) => {
-              return (
-                <PrefElement
-                  key={`item${String(i)}`}
-                  prefName={item.prefName}
-                  prefCode={item.prefCode}
-                />
-              );
+              return <PrefElement key={`item${String(i)}`} prefName={item.prefName} prefCode={item.prefCode} />;
             })}
       </ListContainer>
     </Fragment>
