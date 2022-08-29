@@ -1,12 +1,6 @@
-import React, { useState, useContext, ReactNode } from "react";
+import React, { useState, useContext, ReactNode, createContext } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import {
-  Prefecture,
-  RawPrefPopulation,
-  PrefPopulation,
-  PopulationData,
-  UseRESAS,
-} from "./types";
+import { Prefecture, RawPrefPopulation, PrefPopulation, PopulationData, UseRESAS } from "./types";
 
 const contextDefaultValues: UseRESAS = {
   prefectures: [],
@@ -16,7 +10,8 @@ const contextDefaultValues: UseRESAS = {
   isPrefectureShownInGraphData: (prefCode: number) => false,
 };
 
-const RESASContext = React.createContext(contextDefaultValues);
+// React.createContextだとなぜかテストでコケた。よくわからない
+const RESASContext = createContext(contextDefaultValues);
 
 const apikey = process.env.VITE_API_KEY ?? "";
 const requestHeader: AxiosRequestConfig = { headers: { "X-API-KEY": apikey } };
@@ -27,10 +22,7 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
 
   const getPrefectures = (): void => {
     axios
-      .get(
-        "https://opendata.resas-portal.go.jp/api/v1/prefectures",
-        requestHeader
-      )
+      .get("https://opendata.resas-portal.go.jp/api/v1/prefectures", requestHeader)
       .then((res: AxiosResponse<{ result: Prefecture[] }>) => {
         setPrefectures(res.data.result);
       })
@@ -41,21 +33,12 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
   };
 
   // prefCodeを基に人口データを取得する
-  const getPrefecturePopulation = async (
-    prefCode: number
-  ): Promise<PrefPopulation> => {
+  const getPrefecturePopulation = async (prefCode: number): Promise<PrefPopulation> => {
     return await axios
-      .get(
-        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(
-          prefCode
-        )}`,
-        requestHeader
-      )
+      .get(`https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(prefCode)}`, requestHeader)
       .then((res: AxiosResponse<{ result: RawPrefPopulation }>) => {
         const { data } = res.data.result;
-        const prefName =
-          prefectures.find((item) => item.prefCode === prefCode)?.prefName ??
-          "";
+        const prefName = prefectures.find((item) => item.prefCode === prefCode)?.prefName ?? "";
         const tmp: PrefPopulation = {
           prefCode,
           prefName,
@@ -73,15 +56,12 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
   };
 
   const isPrefectureShownInGraphData = (prefCode: number): boolean => {
-    return populationData.some(
-      (item) => item.prefCode === prefCode && item.isActive
-    );
+    return populationData.some((item) => item.prefCode === prefCode && item.isActive);
   };
 
   const togglePrefectureOnGraph = (prefCode: number): void => {
     // populationDataの中身を走査して、prefCodeが一致するものがあった場合はisAvticeを反転させる
     if (isPrefectureCodeInGraphData(prefCode)) {
-      console.log("find");
       setGraphData(
         populationData.map((item) => {
           if (item.prefCode === prefCode) {
