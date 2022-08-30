@@ -15,7 +15,7 @@ export interface RawPrefPopulation {
 }
 
 export interface PrefPopulation {
-  isActive: boolean;
+  isAvailable: boolean;
   prefCode: number;
   prefName: string;
   label: string;

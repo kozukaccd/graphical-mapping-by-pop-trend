@@ -23,14 +23,14 @@ const randomColor = (): string => {
 export const GraphView: React.FC = () => {
   const { populationData } = useRESAS();
 
-  const [graphData, setGraphData] = useState<GraphData[]>([]);
+  const [graphData, setPopulationData] = useState<GraphData[]>([]);
   const [shownPrefectures, setShownPrefectures] = useState<string[]>([]);
 
   useEffect(() => {
     let tmpGraphData: GraphData[] = [];
     // ここでrecharts.js向けにデータを加工する
     populationData.forEach((pItem1) => {
-      if (pItem1.isActive) {
+      if (pItem1.isAvailable) {
         tmpGraphData = pItem1.data.map((pItem2) => {
           const tmpData = tmpGraphData.find(
             (item) => item.年度 === pItem2.year
@@ -44,7 +44,7 @@ export const GraphView: React.FC = () => {
         });
       }
     });
-    setGraphData(tmpGraphData);
+    setPopulationData(tmpGraphData);
     if (tmpGraphData.length > 0) {
       // graphDataのプロパティから年度だけ除外した県名リストを作成
       setShownPrefectures(

@@ -22,6 +22,8 @@ describe("test", () => {
     render(<PrefElement prefName="北海道" prefCode={1} />);
     const prefButton = screen.getByRole("listitem");
     await userEvent.click(prefButton);
-    await waitFor(() => expect(prefButton).toHaveStyle("background-color: #e5e2f4"));
+    await waitFor(() =>
+      expect(prefButton).toHaveStyle("background-color: #e5e2f4")
+    );
   });
 });

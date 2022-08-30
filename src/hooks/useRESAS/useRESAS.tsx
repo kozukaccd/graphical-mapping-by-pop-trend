@@ -1,6 +1,12 @@
 import React, { useState, useContext, ReactNode, createContext } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { Prefecture, RawPrefPopulation, PrefPopulation, PopulationData, UseRESAS } from "./types";
+import {
+  Prefecture,
+  RawPrefPopulation,
+  PrefPopulation,
+  PopulationData,
+  UseRESAS,
+} from "./types";
 
 const contextDefaultValues: UseRESAS = {
   prefectures: [],
@@ -18,11 +24,14 @@ const requestHeader: AxiosRequestConfig = { headers: { "X-API-KEY": apikey } };
 
 const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
   const [prefectures, setPrefectures] = useState<Prefecture[]>([]);
-  const [populationData, setGraphData] = useState<PopulationData>([]);
+  const [populationData, setPopulationData] = useState<PopulationData>([]);
 
   const getPrefectures = (): void => {
     axios
-      .get("https://opendata.resas-portal.go.jp/api/v1/prefectures", requestHeader)
+      .get(
+        "https://opendata.resas-portal.go.jp/api/v1/prefectures",
+        requestHeader
+      )
       .then((res: AxiosResponse<{ result: Prefecture[] }>) => {
         setPrefectures(res.data.result);
       })
@@ -33,16 +42,25 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
   };
 
   // prefCodeを基に人口データを取得する
-  const getPrefecturePopulation = async (prefCode: number): Promise<PrefPopulation> => {
+  const getPopulationByPrefecture = async (
+    prefCode: number
+  ): Promise<PrefPopulation> => {
     return await axios
-      .get(`https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(prefCode)}`, requestHeader)
+      .get(
+        `https://opendata.resas-portal.go.jp/api/v1/population/composition/perYear?prefCode=${String(
+          prefCode
+        )}`,
+        requestHeader
+      )
       .then((res: AxiosResponse<{ result: RawPrefPopulation }>) => {
         const { data } = res.data.result;
-        const prefName = prefectures.find((item) => item.prefCode === prefCode)?.prefName ?? "";
+        const prefName =
+          prefectures.find((item) => item.prefCode === prefCode)?.prefName ??
+          "";
         const tmp: PrefPopulation = {
           prefCode,
           prefName,
-          isActive: true,
+          isAvailable: true,
           label: data[0].label,
           data: data[0].data,
         };
@@ -50,22 +68,20 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
       });
   };
 
-  // グラフデータの中に都道府県コードがあるか・あった場合isActiveがtrueどうかを判定する
-  const isPrefectureCodeInGraphData = (prefCode: number): boolean => {
-    return populationData.some((item) => item.prefCode === prefCode);
-  };
-
+  // グラフデータの中に引数の都道府県コードがあるか・あった場合isAvailableがtrueどうかを判定する
   const isPrefectureShownInGraphData = (prefCode: number): boolean => {
-    return populationData.some((item) => item.prefCode === prefCode && item.isActive);
+    return populationData.some(
+      (item) => item.prefCode === prefCode && item.isAvailable
+    );
   };
 
   const togglePrefectureOnGraph = (prefCode: number): void => {
     // populationDataの中身を走査して、prefCodeが一致するものがあった場合はisAvticeを反転させる
-    if (isPrefectureCodeInGraphData(prefCode)) {
-      setGraphData(
+    if (populationData.some((item) => item.prefCode === prefCode)) {
+      setPopulationData(
         populationData.map((item) => {
           if (item.prefCode === prefCode) {
-            item.isActive = !item.isActive;
+            item.isAvailable = !item.isAvailable;
             return item;
           } else {
             return item;
@@ -73,10 +89,10 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
         })
       );
     } else {
-      // 無かった場合はRESASから取得してisActive=trueで追加する
-      getPrefecturePopulation(prefCode)
+      // 無かった場合はRESASから取得してisAvailable=trueで追加する
+      getPopulationByPrefecture(prefCode)
         .then((res) => {
-          setGraphData([...populationData, res]);
+          setPopulationData([...populationData, res]);
         })
         .catch((e) => {
           console.log(e);

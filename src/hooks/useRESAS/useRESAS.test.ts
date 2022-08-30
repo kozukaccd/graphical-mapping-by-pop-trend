@@ -4,7 +4,7 @@ import RESASProvider, { useRESAS } from "~/hooks/useRESAS/useRESAS";
 
 jest.mock("axios");
 
-const getPrefecturePopulationResMock = {
+const getPopulationByPrefectureResMock = {
   prefCode: 1,
   data: [
     {
@@ -31,7 +31,7 @@ const expectedPrefecturePopulationData1 = [
   {
     prefCode: 1,
     prefName: "",
-    isActive: true,
+    isAvailable: true,
     label: "総人口",
     data: [
       {
@@ -54,7 +54,7 @@ const expectedPrefecturePopulationData2 = [
   {
     prefCode: 1,
     prefName: "",
-    isActive: false,
+    isAvailable: false,
     label: "総人口",
     data: [
       {
@@ -94,7 +94,9 @@ describe("useRESAS", () => {
   });
 
   test("getPrefecturesが正しくresを返している", async () => {
-    (axios.get as any).mockResolvedValue({ data: { result: getPrefecturesResMock } });
+    (axios.get as any).mockResolvedValue({
+      data: { result: getPrefecturesResMock },
+    });
     const { result } = renderHook(() => useRESAS(), { wrapper: RESASProvider });
     await act(async () => {
       await result.current.getPrefectures();
@@ -102,17 +104,23 @@ describe("useRESAS", () => {
     expect(result.current.prefectures).toEqual(getPrefecturesResMock);
   });
 
-  test("getPrefecturePopulationが正しくresを加工・返している、toggleが機能している", async () => {
-    (axios.get as any).mockResolvedValue({ data: { result: getPrefecturePopulationResMock } });
+  test("getPopulationByPrefectureが正しくresを加工・返している、toggleが機能している", async () => {
+    (axios.get as any).mockResolvedValue({
+      data: { result: getPopulationByPrefectureResMock },
+    });
     const { result } = renderHook(() => useRESAS(), { wrapper: RESASProvider });
     await act(async () => {
       await result.current.togglePrefectureOnGraph(1);
     });
-    expect(result.current.populationData).toEqual(expectedPrefecturePopulationData1);
+    expect(result.current.populationData).toEqual(
+      expectedPrefecturePopulationData1
+    );
 
     await act(async () => {
       await result.current.togglePrefectureOnGraph(1);
     });
-    expect(result.current.populationData).toEqual(expectedPrefecturePopulationData2);
+    expect(result.current.populationData).toEqual(
+      expectedPrefecturePopulationData2
+    );
   });
 });

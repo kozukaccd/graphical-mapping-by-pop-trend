@@ -17,7 +17,7 @@ export const PrefElement: React.FC<{ prefName: string; prefCode: number }> = ({
       onClick={() => {
         clickHandler(prefCode);
       }}
-      isActive={isPrefectureShownInGraphData(prefCode)}
+      isAvailable={isPrefectureShownInGraphData(prefCode)}
     >
       <p>{prefName}</p>
     </Item>
@@ -28,12 +28,12 @@ const Item = styled.li`
   margin: 0.4rem 0.4rem;
   padding: 0rem 0.5rem;
   border: 1px solid #24254a;
-  background-color: ${(props: { isActive: boolean }) =>
-    props.isActive ? "#e5e2f4" : "#fff"};
+  background-color: ${(props: { isAvailable: boolean }) =>
+    props.isAvailable ? "#e5e2f4" : "#fff"};
   &:hover {
     cursor: pointer;
-    background-color: ${(props: { isActive: boolean }) =>
-      props.isActive ? "#d7d2ef" : "#f2f3f9"};
+    background-color: ${(props: { isAvailable: boolean }) =>
+      props.isAvailable ? "#d7d2ef" : "#f2f3f9"};
     transition: 0.1s;
   }
 `;
