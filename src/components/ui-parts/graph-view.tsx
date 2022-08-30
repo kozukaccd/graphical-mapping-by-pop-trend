@@ -45,6 +45,7 @@ export const GraphView: React.FC = () => {
       }
     });
     setPopulationData(tmpGraphData);
+    console.log(tmpGraphData);
     if (tmpGraphData.length > 0) {
       // graphDataのプロパティから年度だけ除外した県名リストを作成
       setShownPrefectures(
@@ -58,7 +59,7 @@ export const GraphView: React.FC = () => {
       <LineChart width={1400} height={700} data={graphData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="年度" interval="preserveStartEnd" />
-        <YAxis interval="preserveStartEnd" />
+        <YAxis interval="preserveStartEnd" width={150} />
         <Tooltip />
         <Legend />
         {shownPrefectures.map((prefName, i) => {
