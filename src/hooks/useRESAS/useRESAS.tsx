@@ -95,6 +95,7 @@ const RESASProvider: React.FC<{ children: ReactNode }> = (props) => {
           setPopulationData([...populationData, res]);
         })
         .catch((e) => {
+          console.log("error");
           console.log(e);
         });
     }

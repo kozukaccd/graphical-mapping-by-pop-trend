@@ -45,7 +45,6 @@ export const GraphView: React.FC = () => {
       }
     });
     setPopulationData(tmpGraphData);
-    console.log(tmpGraphData);
     if (tmpGraphData.length > 0) {
       // graphDataのプロパティから年度だけ除外した県名リストを作成
       setShownPrefectures(
