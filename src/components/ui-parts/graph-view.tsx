@@ -55,7 +55,7 @@ export const GraphView: React.FC = () => {
 
   return (
     <div>
-      <LineChart width={1400} height={800} data={graphData}>
+      <LineChart width={1400} height={700} data={graphData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="年度" interval="preserveStartEnd" />
         <YAxis interval="preserveStartEnd" />
